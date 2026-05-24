@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>现代文学人格测试 | 中文系小组</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Serif+SC:wght@400,500,600,700,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #2c2418;
+            --card: #fef7e8;
+            --text: #3f3324;
+            --sub: #6b4e2e;
+            --accent: #a6743c;
+            --light: #ecdcaa;
+            --border: #dac29c;
+        }
+        [dark-mode="on"] {
+            --bg: #1a1611;
+            --card: #2a241c;
+            --text: #e9dfc7;
+            --sub: #c2b49c;
+            --accent: #d49a5f;
+            --light: #5c4b36;
+            --border: #554634;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background 0.3s, color 0.2s, border-color 0.3s;
+        }
+        body {
+            background: var(--bg);
+            font-family: 'Noto Serif SC', serif;
+            padding: 12px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .dark-toggle {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 999;
+        }
+        .test-container {
+            max-width: 680px;
+            width: 100%;
+            background: var(--card);
+            border-radius: 4px 4px 24px 24px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .progress-area {
+            background: #2e241a;
+            padding: 12px 20px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .progress-thermal {
+            background: #2b211a;
+            height: 12px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ba7a3a, #e0a56e, #f5c28e);
+            border-radius: 20px;
+            transition: width 0.4s;
+        }
+        .progress-msg {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: #e9cf9e;
+        }
+        .question-area {
+            padding: 28px 26px;
+            color: var(--text);
+        }
+        .step-counter {
+            font-size: 0.7rem;
+            color: var(--sub);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            border-left: 2px solid var(--accent);
+            padding-left: 12px;
+        }
+        .dimension-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 4px 14px;
+            border-radius: 24px;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .epigraph {
+            background: rgba(0,0,0,0.05);
+            padding: 18px;
+            border-left: 4px solid var(--accent);
+            margin: 20px 0;
+            line-height: 1.6;
+            color: var(--sub);
+        }
+        .start-page { text-align: center; }
+        .start-title { font-size: 2rem; font-weight: 800; margin: 10px 0; }
+        .start-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .scenario {
+            background: rgba(0,0,0,0.05);
+            padding: 14px;
+            border-left: 4px solid var(--accent);
+            margin: 16px 0;
+        }
+        .question-text { font-size: 1.1rem; font-weight: 600; margin: 12px 0; }
+        .option-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .option-btn.selected {
+            background: var(--light);
+            border-color: var(--accent);
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .nav-btn {
+            flex:1;
+            padding:12px;
+            border-radius:30px;
+            border:1px solid var(--border);
+            background: var(--light);
+            cursor: pointer;
+        }
+        .nav-btn.primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .nav-btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .result-container { text-align: center; }
+        .portrait {
+            width:120px; height:120px;
+            margin:0 auto 16px;
+            border-radius:50%;
+            overflow:hidden;
+            border:3px solid var(--border);
+        }
+        .portrait img { width:100%; height:100%; object-fit:cover; }
+        .result-writer { font-size:2rem; font-weight:800; }
+        .result-tag { font-size:1.2rem; color:var(--accent); margin:8px 0; }
+        .result-badge {
+            background: var(--light);
+            padding:6px 16px;
+            border-radius:20px;
+            font-size:0.9rem;
+            font-weight:500;
+            display:inline-block;
+            margin-bottom:12px;
+        }
+        .result-desc {
+            text-align:left;
+            padding:20px;
+            background: rgba(0,0,0,0.04);
+            border-radius:10px;
+            margin:16px 0;
+        }
+        .six-dim {
+            background: rgba(0,0,0,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: left;
+        }
+        .dim-item {
+            margin-bottom: 16px;
+        }
+        .dim-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--sub);
+            margin-bottom: 4px;
+        }
+        .progress-bar-container {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 6px 0;
+        }
+        .progress-fill-bar {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        .dim-percent {
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .restart-btn {
+            margin-top:20px;
+            padding:12px 28px;
+            background:var(--accent);
+            color:#fff;
+            border:none;
+            border-radius:30px;
+            cursor:pointer;
+        }
+        .footer-note {
+            text-align:center;
+            padding:14px;
+            font-size:0.7rem;
+            color:var(--sub);
+            border-top:1px dotted var(--border);
+        }
+        .fade-in { animation:fadeIn 0.5s forwards; }
+        @keyframes fadeIn {
+            from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}
+        }
+    </style>
+</head>
+<body>
+<button class="dark-toggle" id="darkToggle">🌙</button>
+<div class="test-container" id="app">
+    <div class="progress-area">
+        <div class="progress-thermal"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-msg">
+            <span>📜 灵魂六维 · 民国文气</span>
+            <span id="progressText">未开始</span>
+        </div>
+    </div>
+    <div id="dynamicContent"></div>
+    <div class="footer-note">文学人格 · 六维最近邻匹配</div>
+</div>
+
+<script>
+// ================= 作家数据 (坐标按文学史修正，周作人与张爱玲已区分) =================
+const writersData = {
+    "鲁迅":[1.0, 0.2, 0.0, 2.0, 1.0, 1.0],
+    "老舍":[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "茅盾":[1.0, 1.0, 0.0, 1.0, 1.5, 1.0],
+    "巴金":[0.0, 2.0, 1.8, 1.2, 1.0, 1.0],
+    "曹禺":[0.5, 0.0, 2.0, 2.0, 1.5, 2.0],
+    "沈从文":[0.0, 1.0, 1.0, 1.2, 0.0, 2.0],
+    "张爱玲":[0.0, 0.0, 0.0, 2.0, 1.5, 2.0],
+    "萧红":[0.0, 0.5, 2.0, 2.0, 1.2, 1.0],
+    "郭沫若":[0.0, 2.0, 2.0, 2.0, 1.5, 0.5],
+    "郁达夫":[0.0, 1.7, 1.8, 2.0, 1.0, 1.5],
+    "徐志摩":[0.0, 1.9, 1.8, 1.6, 1.0, 2.0],
+    // 周作人：冲淡旁观，中西融合，文化立场取1.5 (偏外来但融合)
+    "周作人":[0.5, 0.0, 0.0, 1.5, 1.5, 2.0],
+    "钱钟书":[1.0, 0.5, 0.0, 2.0, 1.0, 1.6],
+    "艾青":[1.0, 2.0, 1.0, 2.0, 1.5, 0.0],
+    "闻一多":[0.5, 2.0, 1.5, 1.5, 1.0, 0.0],
+    "叶圣陶":[1.0, 1.0, 1.0, 0.0, 1.0, 0.0]
+};
+
+// 作家图片
+const writerPortrait = {
+    "鲁迅": "https://s3.uuu.ovh/2026/05/19/Z2hX1g0X.jpg",
+    "老舍": "https://s3.uuu.ovh/2026/05/19/HBFWdbAb.jpg",
+    "茅盾": "https://s3.uuu.ovh/2026/05/19/sg3chng2.jpg",
+    "巴金": "https://s3.uuu.ovh/2026/05/19/d8Vj90ta.jpg",
+    "曹禺": "https://s3.uuu.ovh/2026/05/19/DLZK8D4L.jpg",
+    "沈从文": "https://s3.uuu.ovh/2026/05/19/VCg6cKfy.jpg",
+    "张爱玲": "https://s3.uuu.ovh/2026/05/19/ISK8ea3x.jpg",
+    "萧红": "https://s3.uuu.ovh/2026/05/19/dujC8Fl2.jpg",
+    "郭沫若": "https://s3.uuu.ovh/2026/05/19/hjdCS8WV.jpg",
+    "郁达夫": "https://s3.uuu.ovh/2026/05/19/994vI81g.jpg",
+    "周作人": "https://s3.uuu.ovh/2026/05/19/26XAoErw.jpg",
+    "钱钟书": "https://s3.uuu.ovh/2026/05/19/CT5wKEX5.jpg",
+    "徐志摩": "https://s3.uuu.ovh/2026/05/19/cIRtQGW9.jpg",
+    "艾青": "https://s3.uuu.ovh/2026/05/19/ErgnihtB.jpg",
+    "闻一多": "https://s3.uuu.ovh/2026/05/19/5jF0f6js.jpg",
+    "叶圣陶": "https://s3.uuu.ovh/2026/05/19/rLW9V8do.jpg"
+};
+
+const writerTag = {
+    "鲁迅":"IRON","老舍":"WARM","茅盾":"SOCIAL","巴金":"HOT","曹禺":"THUNDER","沈从文":"PEACE",
+    "张爱玲":"COLD","萧红":"WILD","郭沫若":"BOOM","郁达夫":"SAD","周作人":"TEA","钱钟书":"SMART",
+    "徐志摩":"FLY","艾青":"LAND","闻一多":"FIRE","叶圣陶":"GENTLE"
+};
+
+const writerDesc = {
+    "鲁迅": "于浩歌狂热之际中寒，于天上看见深渊。你以冷峻的眼光体察人性的不足，以赤诚的心灵点燃改变的烈焰。你是聚会中独坐角落的人，却默默记住了每个人失态的样子。",
+    "老舍": "一座山即便有坚硬的石头，山上还是开满了鲜花。生活的困难没有打倒你，反而让你学会了悲悯，温暖着身边的每一个朋友。不刻薄，不尖锐，看得通透，活得自适。",
+    "茅盾": "理智的思考和感性的文笔，熔铸为你敏锐的剖析力、清晰的洞察力。文学不仅是你抒情的画具，更是你改变世界的工具，理性没有削弱你的感染力，而是让你更加锋利。",
+    "巴金": "走向真与善，走向生命的热烈，走向未来的灿烂，你的日子燃烧如火，嘴里说的都是真话。愿你永葆你的正义和明快，纵使阴影在前方笼罩，也用自己的热力将其驱散。",
+    "曹禺": "热烈的爱、浓厚的情，化惊天动地的雷雨，化原野之上的日出，你的心里装了一个世界。也许你不能得到旁人的理解，但我相信，你也明白，你终会爆发，灿烂如夏花。",
+    "沈从文": "于钢筋水泥中结庐，你的心里却流着湘西的泉。山水压着，你不浮躁，不吵闹，从内而外有让人安心的气场。在你的圈子里，你是所有人的定心丸。",
+    "张爱玲": "把香燃尽，你心中仍有香灰落地的声音，淡不可闻，一如你对世事的态度，不曾深陷其中。看似淡淡的，遇到合适的人，你的热情也会锋利得扎人，不肯轻易罢休。",
+    "萧红": "原野上流过一丝朔风，它抓住你的心灵，燃烧不安分的火焰，却又如海一样容纳悲情。你的心里是时代，是人类，是没有雕琢的悲喜。你热爱生命，享受生活，静下来的时候也喜欢思考宇宙和人性，性格多样，让人着迷。",
+    "郭沫若": "无法压抑的热情和无法拘束的自由是你的标签，那种奔放热烈的表达有时甚至会吓到别人，什么事都要发到朋友圈，什么目标都要做到最好，你的生活像火焰一样炽热。",
+    "郁达夫": "曾因酒醉鞭名马，生怕多情累美人。一直包裹你的忧郁的雾，源自于你的浓情。网易云资深深夜用户，把所有开心的脆弱的都发成微博，你是一个嘴角常向下，却仍然让人觉得可爱的人。",
+    "周作人": "品茶看书，写不牟利的稿，翻译没人看的书，你更愿意避开学分绩点的纠纷，过好自己的慢生活，看着别人奔波劳碌，自己有自己的学术思考和成长节奏。",
+    "钱钟书": "所有人都怕听你说话又爱听你说话，犀利得有趣，幽默得伤人，让朋友又爱又恨。而这背后是你饱读诗书的见识，其实相比于去怼人、聚会，你更喜欢啃自己的书卷。",
+    "徐志摩": "浪漫的爱和多情的温柔是你生活的底色，你不相信人性的恶，反而对这些东西主动远离。你相信诗和远方，相信一见钟情，生活可爱而轻盈，永不为未来担忧。",
+    "艾青": "平时不修边幅，不注重着装，但一谈起祖国，谈起人民，你饱含热情。木讷到不够“社会化”，平时也不怎么说话，但你的每一句话都很厚重。也许你不会愿意深夜蹦迪，却愿意把假期放在支教和义工上。",
+    "闻一多": "不管是小时候面对父母，还是以后面对老师同学，觉得不对的东西你就是要说出来，不说出来也不会照做。徜徉于各大新闻区的你，对国家和真善美都充满极端热情，在网上与人辩论已经是家常便饭。但你的爱绝对不是口号，你有知识的积淀，也有行动的支撑。",
+    "叶圣陶": "谦厚而有礼，出门之前要穿得正式，任何会议都提前到场，从来不因任何原因大吵大闹，但一遇到事情不呆板而敢负责。你现实而不功利，理想但不疯狂，是小组项目的兜底人，是看见了人性隐恶但相信美好的人。"
+};
+
+const writerRecommend = {
+    "鲁迅": { work: "《野草·题辞》", quote: "“当我沉默着的时候，我觉得充实；我将开口，同时感到空虚。”" },
+    "老舍": { work: "《四世同堂》", quote: "“你须把受委屈当作生活，而从委屈中咂摸出一点甜味来。好使你还肯活下去。”" },
+    "茅盾": { work: "《子夜》", quote: "“天亮之前有一个时候，是非常暗的。”" },
+    "巴金": { work: "《家》", quote: "“青春是美丽的东西，而且对我来说，它永远是鼓舞的源泉。”" },
+    "曹禺": { work: "《雷雨》", quote: "“那个时候，我还是个孩子，在这样一块地方，我居然敢闹鬼。”" },
+    "沈从文": { work: "《边城》", quote: "“这个人也许永远不回来了，也许‘明天’回来。”" },
+    "张爱玲": { work: "《金锁记》", quote: "“三十年前的上海，一个有月亮的晚上……我们也许没赶上看见三十年前的月亮。”" },
+    "萧红": { work: "《呼兰河传》", quote: "“逆来顺受，你说我的生命可惜，我自己却不在乎。”" },
+    "郭沫若": { work: "《女神》", quote: "“我是一条天狗呀！我把月来吞了，我把日来吞了！”" },
+    "郁达夫": { work: "《沉沦》", quote: "“祖国呀祖国！我的死是你害我的！”" },
+    "周作人": { work: "《雨天的书》", quote: "“喝茶当于瓦屋纸窗之下，清泉绿茶，用素雅的陶瓷茶具。”" },
+    "钱钟书": { work: "《围城》", quote: "“婚姻是一座围城，城外的人想进去，城里的人想出来。”" },
+    "徐志摩": { work: "《再别康桥》", quote: "“我轻轻的招手，作别西天的云彩。”" },
+    "艾青": { work: "《大堰河——我的保姆》", quote: "“大堰河，今天我看到雪使我想起了你。”" },
+    "闻一多": { work: "《死水》", quote: "“这是一沟绝望的死水，清风吹不起半点漪沦。”" },
+    "叶圣陶": { work: "《倪焕之》", quote: "“教育者不是造神，不是造石像，是造真善美的活人。”" }
+};
+
+// 维度中文标签（两极 + 显示名称）
+const dimConfig = [
+    { left: "❄️ 冷峻克制", right: "🔥 情感浓烈", label: "性格", shortName: "性格" },
+    { left: "📝 写实求真", right: "🎨 写意抒情", label: "文字风格", shortName: "文字风格" },
+    { left: "🌍 介入社会", right: "🌙 退守内心", label: "文学取向", shortName: "文学取向" },
+    { left: "🏛️ 守章法", right: "✨ 创新破格", label: "形式态度", shortName: "形式态度" },
+    { left: "🏯 亲传统", right: "🗽 亲外来", label: "文化立场", shortName: "文化立场" },
+    { left: "⚡ 载道入世", right: "🍃 言志抒情", label: "文学功能", shortName: "文学功能" }
+];
+
+// 原始题目（未排序，未分组）
+const rawQuestions = [
+    // 维度: character (性格)
+    {"dim":"character","options":[0,1,2],"text":"社团聚会结束后，大家提议去KTV续摊，而你其实已经有点累了。","q":"你最可能怎么做？","opts":[{"val":0,"title":"悄悄离开","fun":"社交加班，恕不奉陪"},{"val":1,"title":"跟着去","fun":"来都来了，随缘待机"},{"val":2,"title":"主动组织","fun":"我来安排，电量无限"}]},
+    {"dim":"character","options":[0,1,2],"text":"在陌生的社交场合，你通常更像哪种类型？","q":"你通常更像哪种类型？","opts":[{"val":0,"title":"角落观察员","fun":"社交观众，勿cue"},{"val":1,"title":"善意发射器","fun":"来者是客，微笑点头"},{"val":2,"title":"社交恐怖分子","fun":"全场都是我的新朋友"}]},
+    {"dim":"character","options":[0,1,2],"text":"小组讨论时遇到一个非常固执的同学，坚持一个明显有点偏的方向。","q":"你会？","opts":[{"val":0,"title":"冷眼反问：“证据呢？推演过吗？”","fun":"拆台式追问"},{"val":1,"title":"先肯定，再补一句“不过数据好像……”","fun":"软着陆"},{"val":2,"title":"直接拿起笔说“我来画个逻辑图”","fun":"我已接管讨论"}]},
+    {"dim":"character","options":[0,1,2],"text":"你最好的朋友突然心情不好，深夜发信息说“我觉得自己很普通”。","q":"你最可能怎么回复？","opts":[{"val":0,"title":"谁定义的“普通”？这标准本身就值得怀疑。","fun":"看起来是玻璃渣，其实都是糖"},{"val":1,"title":"在我这里，你的“普通”就是最让我安心的存在。","fun":"慰藉内心，引导型朋友"},{"val":2,"title":"你哪里普通了？给我三分钟，马上列优点清单！","fun":"爱的直球！"}]},
+    {"dim":"character","options":[0,1,2],"text":"你看到新来的同学被排挤，你们不熟。","q":"你会？","opts":[{"val":0,"title":"走过去，坐在他旁边","fun":"行动即立场"},{"val":1,"title":"递颗糖，邀请他做同桌","fun":"甜味破冰器"},{"val":2,"title":"出言制止，邀请他加入自己的团体","fun":"强行收编，霸总来了"}]},
+    
+    // 维度: style (文字风格)
+    {"dim":"style","options":[0,1,2],"text":"你写了一段话发朋友圈，想表达“今天很累但很充实”。","q":"你会怎么写？","opts":[{"val":0,"title":"极简留白","fun":"“累。充实。”"},{"val":1,"title":"日常叙事","fun":"“改了一整天论文，但下午喝到一杯好咖啡。”"},{"val":2,"title":"感官沉浸","fun":"“身体像被掏空，但心里放了一场烟火。”"}]},
+    {"dim":"style","options":[0,1,2],"text":"你写一篇短篇小说，以下哪种开头更吸引你？","q":"你更倾向于哪种？","opts":[{"val":0,"title":"冷峻留白","fun":"“那天之后，他再也没有笑过。”"},{"val":1,"title":"平实引入","fun":"“老李住在城南的旧巷子里。”"},{"val":2,"title":"诗意渲染","fun":"“月光碎了一地，像他十七岁那年没送出去的告白。”"}]},
+    {"dim":"style","options":[0,1,2],"text":"回忆一件让你很难过的往事，你一般会怎么表达？","q":"你一般会怎么表达？","opts":[{"val":0,"title":"克制沉默","fun":"几乎不说，或只说一句“当时挺难的”"},{"val":1,"title":"平静叙述","fun":"会平静地把经过讲出来，像在说别人的故事"},{"val":2,"title":"细节渲染","fun":"会描述很多细节和当时的感受，画面感很强"}]},
+    {"dim":"style","options":[0,1,2],"text":"你在公众号上写一篇游记，记录一次爬山经历。","q":"你更倾向哪种写法？","opts":[{"val":0,"title":"冷峻速写","fun":"“登顶。雾散。下山。”"},{"val":1,"title":"平实记录","fun":"“爬到一半想放弃，多亏旁边大爷递了根登山杖。”"},{"val":2,"title":"浓烈抒情","fun":"“山风灌进领口，像少年的叹息。”"}]},
+    
+    // 维度: orientation (文学取向)
+    {"dim":"orientation","options":[0,1],"text":"周末傍晚，你路过一场街头的露天电影放映，正在播一部老片子。同时手机里也收到朋友发来的一段自己写的短诗。","q":"哪个瞬间更让你有“这就是文学”的触动？","opts":[{"val":0,"title":"那首诗","fun":"内心是热闹的剧场"},{"val":1,"title":"那部电影","fun":"老想着“这社会怎么了”"}]},
+    {"dim":"orientation","options":[0,1],"text":"你去逛书店，看到一本书的封面写着“献给所有在现实中挣扎的理想主义者”。","q":"你更倾向于认为这本书的内容是？","opts":[{"val":0,"title":"一个关于梦想与救赎的叙事诗","fun":"暂时逃离现实，才能谈理想"},{"val":1,"title":"一个关于职场与房贷的纪实故事","fun":"先看清现实，再谈理想"}]},
+    {"dim":"orientation","options":[0,1],"text":"如果你要为一个新文学杂志写“发刊词”，你更想强调哪句话？","q":"你更想强调哪句话？","opts":[{"val":0,"title":"“文学是灵魂的避难所”","fun":"让人找到自己"},{"val":1,"title":"“文学是人学，要直面时代的伤口”","fun":"对得起时代"}]},
+    {"dim":"orientation","options":[0,1],"text":"朋友跟你争论“文学需不需要写得美”，你会更认同哪一种？","q":"你会更认同哪一种？","opts":[{"val":0,"title":"美是文学的第一要义","fun":"不美的文字不如不写"},{"val":1,"title":"真实比美更重要","fun":"残酷的现实也是文学"}]},
+    
+    // 维度: form (形式态度)
+    {"dim":"form","options":[0,1,2],"text":"你在做一个创意项目，突然想到一个非常新颖但风险很大的方案。","q":"你会？","opts":[{"val":0,"title":"稳妥至上","fun":"风险太高，沿用原方案"},{"val":1,"title":"小步试错","fun":"先在小范围内试用新方案"},{"val":2,"title":"大胆推进","fun":"风浪越大鱼越贵"}]},
+    {"dim":"form","options":[0,1,2],"text":"面对一个经典但略显过时的评价标准，你会？","q":"你会？","opts":[{"val":0,"title":"尊重传统","fun":"存在即合理，沿用标准"},{"val":1,"title":"稳扎稳打","fun":"在旧标准基础上加新维度"},{"val":2,"title":"掀桌重来","fun":"推翻旧标准全换新的"}]},
+    {"dim":"form","options":[0,1,2],"text":"文学课老师布置了一次日常小作业，没有严格的格式要求。","q":"你会？","opts":[{"val":0,"title":"按常规格式","fun":"规矩就是规矩，按标准来"},{"val":1,"title":"在框架内发挥","fun":"带着镣铐跳舞，适当创新"},{"val":2,"title":"按自己逻辑","fun":"内容比形式重要，按我的来"}]},
+    {"dim":"form","options":[0,1,2],"text":"你喜欢的UP主尝试了一种全新的视频风格，评论区有人说“变味了”。","q":"你觉得？","opts":[{"val":0,"title":"怀念旧风格","fun":"旧风格更亲切，新风格不太适应"},{"val":1,"title":"风格各有趣","fun":"新风格有亮点，旧风格也有味道"},{"val":2,"title":"支持创新","fun":"永远在路上，支持突破与创新"}]},
+    
+    // 维度: culture (文化立场)
+    {"dim":"culture","options":[0,1,2],"text":"你正在装修自己的房间，你更倾向于？","q":"你更倾向于？","opts":[{"val":0,"title":"最常规的家居装修风格","fun":"安全第一，不出错"},{"val":1,"title":"小范围尝试一些新风格，比如复古风等","fun":"在细节里加点趣味"},{"val":2,"title":"我的房间必须别具一格，尝试大范围使用奇特的风格","fun":"大胆实验，独一无二"}]},
+    {"dim":"culture","options":[0,1,2],"text":"你刷到一篇文章说“年轻人应该多读传统文化经典，少读外国翻译文学”。","q":"你会？","opts":[{"val":0,"title":"认同传统优先","fun":"有道理，根不能丢，先把老祖宗吃透"},{"val":1,"title":"主张兼收并蓄","fun":"各有所长，不要二极管"},{"val":2,"title":"偏向世界文学","fun":"太保守了，好作品不分国界，文学是世界语"}]},
+    {"dim":"culture","options":[0,1,2],"text":"你觉得现代华语文学最应该向谁学习？","q":"你觉得最应该向谁学习？","opts":[{"val":0,"title":"中国古典","fun":"从《红楼梦》、唐宋八大家里找灵感"},{"val":1,"title":"中西结合","fun":"东西方都看，但要写中国人的事"},{"val":2,"title":"世界文学","fun":"重视卡夫卡、马尔克斯、博尔赫斯"}]},
+    {"dim":"culture","options":[0,1,2],"text":"如果让你选一句人生格言，你更倾向？","q":"你更倾向？","opts":[{"val":0,"title":"圣人为腹不为目，故去彼取此。","fun":"向内扎根"},{"val":1,"title":"万物皆可入诗，只要你敢凝视它。","fun":"意义，由我自决"},{"val":2,"title":"你已飞渡万重的山头／去更阔大的湖海投射影子","fun":"逐浪，向世界"}]},
+    
+    // 维度: function (文学功能)
+    {"dim":"function","options":[0,1,2],"text":"你觉得作家最不应该丢弃的是什么？","q":"你觉得作家最不应该丢弃的是什么？","opts":[{"val":0,"title":"批判的勇气","fun":"为沉默者发声，文以载道"},{"val":1,"title":"对人的共情","fun":"看见具体的人，在风花雪月里也称重现实"},{"val":2,"title":"独特的审美","fun":"保持艺术的独立性，灵魂裸奔才叫诚恳"}]},
+    {"dim":"function","options":[0,1,2],"text":"当你读到一篇写得很美但“不关心社会”的纯抒情散文时，你会觉得？","q":"你会觉得？","opts":[{"val":0,"title":"入世优先","fun":"有点可惜，好文笔该写更有意义的事"},{"val":1,"title":"多元共赏","fun":"挺好的，文学本来就有不同功能，百花齐放"},{"val":2,"title":"审美至上","fun":"很珍贵，纯文学的审美价值就在这里"}]},
+    {"dim":"function","options":[0,1,2],"text":"你更欣赏哪种文学批评？","q":"你更欣赏哪种？","opts":[{"val":0,"title":"这作品对时代有用吗？能带来进步吗？","fun":"文以载道，质检员上线"},{"val":1,"title":"美是重要的，但若能多一些现实的重量，会更沉。","fun":"在风花雪月里也要称重"},{"val":2,"title":"别谈高大的意义，我只在乎写作者有没有交出真正的自己。","fun":"灵魂裸奔，才叫诚恳"}]},
+    {"dim":"function","options":[0,1,2],"text":"你觉得文学史上的“左翼文学”最大的价值是什么？","q":"你觉得最大的价值是什么？","opts":[{"val":0,"title":"直接介入社会","fun":"让文学直接参与改变社会，有血性"},{"val":1,"title":"记录底层现实","fun":"记录了那个时代底层人民的真实处境，历史的底稿"},{"val":2,"title":"激发形式探索","fun":"激发了新的创作方法与题材，丰富了文学可能性"}]}
+];
+
+// 打乱题目顺序 (Fisher-Yates)
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+const questions = shuffleArray([...rawQuestions]);
+
+// 获取维度中文名及显示标签 (使用你指定的简洁命名)
+function getDimensionDisplay(dimKey) {
+    const map = {
+        "character": "① 性格",
+        "style": "② 文字风格",
+        "orientation": "③ 文学取向",
+        "form": "④ 形式态度",
+        "culture": "⑤ 文化立场",
+        "function": "⑥ 文学功能"
+    };
+    return map[dimKey] || "维度";
+}
+
+let currentIndex = 0;
+let userAnswers = new Array(questions.length).fill(null);
+let testStarted = false;
+let finalUserVec = [];
+const dynamicDiv = document.getElementById("dynamicContent");
+const progressFill = document.getElementById("progressFill");
+const progressTextSpan = document.getElementById("progressText");
+
+// 暗黑模式
+document.getElementById("darkToggle").onclick = () => {
+    const mode = document.body.getAttribute("dark-mode") === "on" ? "off" : "on";
+    document.body.setAttribute("dark-mode", mode);
+    document.getElementById("darkToggle").innerText = mode === "on" ? "☀️" : "🌙";
+};
+
+function updateProgress() {
+    if (!testStarted) {
+        progressFill.style.width = "0%";
+        progressTextSpan.innerText = "未开始";
+        return;
+    }
+    const answered = userAnswers.filter(x => x !== null).length;
+    const pct = (answered / questions.length) * 100;
+    progressFill.style.width = pct + "%";
+    if (answered === 0) progressTextSpan.innerText = "📭 尚未落笔";
+    else if (answered < 8) progressTextSpan.innerText = `✍️ 已答 ${answered} 题 · 墨迹初显`;
+    else if (answered < 18) progressTextSpan.innerText = `📜 已答 ${answered} 题 · 文心渐明`;
+    else if (answered < questions.length) progressTextSpan.innerText = `🎋 已答 ${answered} 题 · 即将破茧`;
+    else progressTextSpan.innerText = "⚡ 全部答完 · 查看结果";
+}
+
+function renderStartPage() {
+    testStarted = false;
+    updateProgress();
+    dynamicDiv.innerHTML = `
+    <div class="question-area start-page fade-in">
+        <div style="font-size:2.5rem; margin:10px">📜✨</div>
+        <div class="start-title">现代文学人格测试</div>
+        <div style="margin:10px; color:var(--sub)">六维坐标 · 文心里寻自己</div>
+        <div class="epigraph">
+            “远去的文学是隐蔽在幽暗里的微光，一旦召回，我们便被沐浴在神奇的色泽里。<br>
+            文学史不都是知识的罗列，还有精神的对话。”
+            <div style="text-align:right; margin-top:8px">—— 孙郁</div>
+        </div>
+        <button class="start-btn" id="startBtn">开始测试</button>
+    </div>`;
+    document.getElementById("startBtn").onclick = () => {
+        testStarted = true;
+        currentIndex = 0;
+        userAnswers.fill(null);
+        updateProgress();
+        renderCurrentQuestion();
+    };
+}
+
+function renderCurrentQuestion() {
+    const q = questions[currentIndex];
+    const sel = userAnswers[currentIndex];
+    const dimDisplay = getDimensionDisplay(q.dim);
+    
+    let optsHTML = "";
+    q.opts.forEach(opt => {
+        const c = sel === opt.val ? "selected" : "";
+        optsHTML += `
+        <div class="option-btn ${c}" data-val="${opt.val}">
+            <div style="font-weight: bold;">${opt.title}</div>
+            <div style="font-size:0.8rem; color:var(--sub)">${opt.fun}</div>
+        </div>`;
+    });
+
+    dynamicDiv.innerHTML = `
+    <div class="question-area fade-in">
+        <div class="step-counter">第 ${currentIndex + 1} / ${questions.length} 题</div>
+        <div class="dimension-badge">📌 ${dimDisplay}</div>
+        <div class="scenario">${q.text}</div>
+        <div class="question-text">${q.q}</div>
+        ${optsHTML}
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn" ${currentIndex === 0 ? "disabled" : ""}>上一题</button>
+            <button class="nav-btn primary" id="nextBtn">${currentIndex === questions.length - 1 ? "生成结果" : "下一题"}</button>
+        </div>
+    </div>`;
+
+    document.querySelectorAll(".option-btn").forEach(btn => {
+        btn.onclick = () => {
+            userAnswers[currentIndex] = parseInt(btn.dataset.val);
+            document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            updateProgress();
+        };
+    });
+
+    document.getElementById("prevBtn").onclick = () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderCurrentQuestion();
+        }
+    };
+
+    document.getElementById("nextBtn").onclick = () => {
+        if (userAnswers[currentIndex] === null) {
+            alert("请选择一个选项再继续～");
+            return;
+        }
+        if (currentIndex === questions.length - 1) {
+            computeAndShowResult();
+        } else {
+            currentIndex++;
+            renderCurrentQuestion();
+        }
+    };
+}
+
+async function computeAndShowResult() {
+    dynamicDiv.innerHTML = `<div class="question-area" style="text-align:center; padding:60px 0;"><div style="font-size:1.4rem">正在生成你的文学人格...</div></div>`;
+    await new Promise(r => setTimeout(r, 600));
+
+    const dimSums = { orientation: 0, character: 0, style: 0, form: 0, culture: 0, function: 0 };
+    const dimCounts = { orientation: 0, character: 0, style: 0, form: 0, culture: 0, function: 0 };
+
+    for (let i = 0; i < questions.length; i++) {
+        const dim = questions[i].dim;
+        dimSums[dim] += userAnswers[i];
+        dimCounts[dim]++;
+    }
+
+    finalUserVec = [
+        dimSums.orientation / dimCounts.orientation,
+        dimSums.character / dimCounts.character,
+        dimSums.style / dimCounts.style,
+        dimSums.form / dimCounts.form,
+        dimSums.culture / dimCounts.culture,
+        dimSums.function / dimCounts.function
+    ];
+
+    let bestWriter = null;
+    let minDist = 999;
+    for (const [name, coords] of Object.entries(writersData)) {
+        let d = 0;
+        for (let i = 0; i < 6; i++) d += Math.pow(finalUserVec[i] - coords[i], 2);
+        const dist = Math.sqrt(d);
+        if (dist < minDist) {
+            minDist = dist;
+            bestWriter = name;
+        }
+    }
+
+    showResult(bestWriter, minDist);
+}
+
+function showResult(name, dist) {
+    const img = writerPortrait[name];
+    const rec = writerRecommend[name];
+    const fitPercent = Math.min(95, Math.max(40, Math.round(100 - dist * 18)));
+    
+    let dimHtml = '';
+    for (let i = 0; i < 6; i++) {
+        const score = finalUserVec[i];
+        const percent = Math.round((score / 2) * 100);
+        const leftLabel = dimConfig[i].left;
+        const rightLabel = dimConfig[i].right;
+        
+        dimHtml += `
+            <div class="dim-item">
+                <div class="dim-labels">
+                    <span>${leftLabel}</span>
+                    <span>${rightLabel}</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-fill-bar" style="width: ${percent}%;"></div>
+                </div>
+                <div class="dim-percent">${percent}% → ${rightLabel.split(' ')[0]}</div>
+            </div>
+        `;
+    }
+
+    dynamicDiv.innerHTML = `
+    <div class="question-area result-container fade-in">
+        <div class="step-counter">文学人格结果</div>
+        <div class="portrait"><img src="${img}" alt="${name}" onerror="this.onerror=null;this.parentElement.innerHTML='<span style=\'font-size:3rem;\'>📖✨</span>'"></div>
+        <div class="result-writer">${name}</div>
+        <div class="result-tag">${writerTag[name]}</div>
+        <div class="result-badge">人格契合度 ${fitPercent}%</div>
+        
+        <div class="six-dim">
+            <div style="font-weight:bold; margin-bottom:12px;">📊 你的六维气质图谱</div>
+            ${dimHtml}
+        </div>
+        
+        <div class="result-desc">
+            ${writerDesc[name]}
+            <div style="margin-top:16px; padding-top:16px; border-top:1px dotted var(--border)">
+                📚 推荐阅读：${rec.work}<br>
+                ✍️ ${rec.quote}
+            </div>
+        </div>
+
+        <button class="restart-btn" onclick="renderStartPage()">重新测试</button>
+    </div>`;
+
+    progressFill.style.width = "100%";
+    progressTextSpan.innerText = "文格已现";
+}
+
+renderStartPage();
+</script>
+</body>
+</html>
